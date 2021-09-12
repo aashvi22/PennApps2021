@@ -30,3 +30,12 @@ def home():
         flash('Game created', category='success')
     return render_template("home.html", user=current_user)
 
+@views.route('/games', methods = ['GET', 'POST'])
+def games():
+    # Query database for the user's id
+    user_games = Game.query.filter_by(user_id = current_user.id)
+
+    # user_games = {key:value for key, value in user_games.__dict__.items() if not key.startswith('__') and not callable(key)}
+    # Display the necessary data
+    return render_template("games.html", user_games = user_games, user = current_user)
+

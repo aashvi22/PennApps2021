@@ -55,6 +55,9 @@ background: linear-gradient(90deg, rgba(142,73,212,1) 0%, rgba(45,194,162,1) 53%
                 <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#startButton" aria-controls="startButton">
                 Start Game
                 </button>
+                
+                <a class = "nav-item nav-link" id="login" href = "{{ url_for('views.games') }}"> Games </a>
+
                <!--  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#joinButton" aria-controls="joinButton">
                 Join Game
                 </button> -->
@@ -72,7 +75,7 @@ background: linear-gradient(90deg, rgba(142,73,212,1) 0%, rgba(45,194,162,1) 53%
                 <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
               </div>
               <div class="offcanvas-body">
-                  <form class="row g-3" method="POST">
+  <form class="row g-3" method="POST">
     <div class="col-12">
       <label for="gameName" class="form-label">Name</label>
       <input type="text" class="form-control" id="gameName" name="gameName" placeholder="Name your game so others can find it" required>
