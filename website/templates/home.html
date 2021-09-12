@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block title %}Pickup Finder{% endblock %}
+{% block content %}
+  <style>
+    /* body {
+      margin: 0;
+    } */
+
+    .sb-title {
+      position: relative;
+      top: -12px;
+      font-family: Roboto, sans-serif;
+      font-weight: 500;
+    }
+
+    .sb-title-icon {
+      position: relative;
+      top: -5px;
+    }
+
+    .card-container {
+      display: flex;
+      height: 500px;
+      width: 600px;
+    }
+
+    .panel {
+      background: white;
+      width: 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .half-input-container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .half-input {
+      max-width: 120px;
+    }
+
+    .map {
+      width: 300px;
+      height: 400px;
+    }
+
+    .card-container h2 {
+      margin: 0;
+      font-family: Roboto, sans-serif;
+    }
+
+    .card-container input {
+      height: 30px;
+    }
+
+    .card-container input {
+      border: 0;
+      border-bottom: 1px solid black;
+      font-size: 14px;
+      font-family: Roboto, sans-serif;
+      font-style: normal;
+      font-weight: normal;
+    }
+
+    .card-container input:focus::placeholder {
+      color: white;
+    }
+
+    .card-container .button-cta {
+      height: 40px;
+      width: 40%;
+      background: #3367d6;
+      color: white;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-family: Roboto, sans-serif;
+      border: 0;
+      border-radius: 3px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.48);
+      cursor: pointer;
+    }
+  </style>
+<!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+        <!--The div element for the map-->
+        <div id="map" style = "margin-top:10%"></div>
+
+        <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+        <script
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbfJSrQpiU7m3TrZUR47gLJCBRfC44gys&callback=initMap&libraries=&v=weekly"
+          async
+        ></script>
+
+<!--<form class="row g-3" method="POST">
+    <div class="col-12">
+      <label for="gameName" class="form-label">Name</label>
+      <input type="text" class="form-control" id="gameName" name="gameName" placeholder="Name your game so others can find it" required>
+    </div>
+    <div class="col-md-6">
+      <label for="sportSelect" class="form-label">Sport Type</label>
+      <select class="form-select" name="sportSelect" aria-label="Default select example" required>
+        <option selected>Pick your sport</option>
+        <option value="basketball">Basketball</option>
+        <option value="soccer">Soccer</option>
+      </select>
+    </div>
+    <div class = "col-md-6">
+      <label for="currNumPeople" class="form-label">Current Number of People</label>
+      <input type="text" class="form-control" id="currNumPeople" name="currNumPeople" placeholder="How many people you have?" required>
+    </div>
+    <div class = "col-md-6">
+      <label for="totalNumPeople" class="form-label">Total Number of People</label>
+      <input type="text" class="form-control" id="totalNumPeople" name="totalNumPeople" placeholder="How many people total do you want?" required>
+    </div>
+    <div class="col-12">
+      <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="makePublic" name="makePublic">
+          <label class="form-check-label" for="flexSwitchCheckChecked">Make public</label>
+          </div>
+    </div>
+    <div class="col-md-6">
+      <label for="lat" class="form-label">Latitude</label>
+      <input type="text" class="form-control" id="lat" name="lat" placeholder="Input latitude or use your current location" required>
+    </div>
+    <div class="col-md-6">
+      <label for="lng" class="form-label">Longitude</label>
+      <input type="text" class="form-control" id="lng" name="lng" placeholder="Input longitude or use your current location" required>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Date/Time</label>
+        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime">
+    </div>
+    <div class="col-12">
+      <button type="button" class = "btn btn-primary" id="getCurrentLocationBtn" name="getCurrentLocationBtn">Get current location <i class="bi bi-pin-map-fill"></i></button>
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Create a game</button>
+    </div>
+</form>-->
+
+<script>
+  "use strict";
+
+  function initMap() {
+    const componentForm = [
+      'location',
+      'locality',
+      'administrative_area_level_1',
+      'country',
+      'postal_code',
+    ];
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 11,
+      center: { lat: 37.4221, lng: -122.0841 },
+      mapTypeControl: false,
+      fullscreenControl: true,
+      zoomControl: true,
+      streetViewControl: true
+    });
+    const marker = new google.maps.Marker({map: map, draggable: false});
+    const autocompleteInput = document.getElementById('location');
+    const autocomplete = new google.maps.places.Autocomplete(autocompleteInput);
+    autocomplete.addListener('place_changed', function () {
+      marker.setVisible(false);
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+        // User entered the name of a Place that was not suggested and
+        // pressed the Enter key, or the Place Details request failed.
+        window.alert('No details available for input: \'' + place.name + '\'');
+        return;
+      }
+      renderAddress(place);
+      fillInAddress(place);
+    });
+
+    function fillInAddress(place) {  // optional parameter
+      const addressNameFormat = {
+        'street_number': 'short_name',
+        'route': 'long_name',
+        'locality': 'long_name',
+        'administrative_area_level_1': 'short_name',
+        'country': 'long_name',
+        'postal_code': 'short_name',
+      };
+      const getAddressComp = function (type) {
+        for (const component of place.address_components) {
+          if (component.types[0] === type) {
+            return component[addressNameFormat[type]];
+          }
+        }
+        return '';
+      };
+      document.getElementById('location').value = getAddressComp('street_number') + ' '
+                + getAddressComp('route');
+      for (const component of componentForm) {
+        // Location field is handled separately above as it has different logic.
+        if (component !== 'location') {
+          document.getElementById(component).value = getAddressComp(component);
+        }
+      }
+    }
+
+    function renderAddress(place) {
+      map.setCenter(place.geometry.location);
+      marker.setPosition(place.geometry.location);
+      marker.setVisible(true);
+    }
+  }
+</script>
+<script>
+  // Listen for the button click
+  getCurrentLocationBtn = document.getElementById('getCurrentLocationBtn');
+  getCurrentLocationBtn.addEventListener('click', e => {
+    getLocation()
+  });
+
+  // On clicking the geolocation button, get location
+  getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(returnDisplayLocation)
+    } else {
+      M.toast({ html: "Sorry, your browser does not support this feature... Please Update your Browser to enjoy it", classes: "rounded" });
+    }
+  }
+
+  returnDisplayLocation = (position) => {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    document.getElementById('lat').value = lat
+    document.getElementById('lng').value = lng
+
+  }
+  // Get form data from the HTML
+  </script>
+
+{% endblock %}

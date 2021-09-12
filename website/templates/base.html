@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name = "viewport" content = "width=device-width, initial-scale = 1"/>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+        <title>{% block title %}Home{% endblock %}</title> <!-- blocks are changeable in child files-->
+
+        <!-- api key  -->
+    <title>Add Map</title>
+
+    <style type="text/css">
+      /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;
+        /* The height is 400 pixels */
+        width: 100%;
+        /* The width is the width of the web page */
+      }
+    </style>
+    <script>
+      // Initialize and add the map
+      function initMap() {
+        // The location of Uluru
+        const uluru = { lat: -25.344, lng: 131.036 };
+        // The map, centered at Uluru
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 4,
+          center: uluru,
+        });
+        // The marker, positioned at Uluru
+        const marker = new google.maps.Marker({
+          position: uluru,
+          map: map,
+        });
+      }
+    </script>
+    </head>
+    <body style="background: rgb(142,73,212);
+background: linear-gradient(90deg, rgba(142,73,212,1) 0%, rgba(45,194,162,1) 53%, rgba(0,212,255,1) 100%)">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% if user.is_authenticated %}
+                <!-- <a class = "nav-item nav-link" id="join" href = "/join">Join Game</a>
+                <a class = "nav-item nav-link" id="start" href = "/start">Start Game</a> -->
+                <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#startButton" aria-controls="startButton">
+                Start Game
+                </button>
+               <!--  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#joinButton" aria-controls="joinButton">
+                Join Game
+                </button> -->
+                {%else%}
+                <a class = "nav-item nav-link" id="login" href = "/login">Login</a>
+                <a class = "nav-item nav-link" id="signUp" href = "/sign-up">Sign up</a>
+                {%endif%}
+            </div>
+              <h1 style="color:white; padding-right: 10%">Game Finder</h1>
+          </div>
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="startButton" aria-labelledby="startButtonLabel">
+              <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="startButtonLabel">Start Game</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body">
+                  <form class="row g-3" method="POST">
+    <div class="col-12">
+      <label for="gameName" class="form-label">Name</label>
+      <input type="text" class="form-control" id="gameName" name="gameName" placeholder="Name your game so others can find it" required>
+    </div>
+    <div class="col-md-6">
+      <label for="sportSelect" class="form-label">Sport Type</label>
+      <select class="form-select" name="sportSelect" aria-label="Default select example" required>
+        <option selected>Pick your sport</option>
+        <option value="basketball">Basketball</option>
+        <option value="soccer">Soccer</option>
+      </select>
+    </div>
+    <div class = "col-md-6">
+      <label for="currNumPeople" class="form-label">Current Number of People</label>
+      <input type="text" class="form-control" id="currNumPeople" name="currNumPeople" placeholder="How many people you have?" required>
+    </div>
+    <div class = "col-md-6">
+      <label for="totalNumPeople" class="form-label">Total Number of People</label>
+      <input type="text" class="form-control" id="totalNumPeople" name="totalNumPeople" placeholder="How many people total do you want?" required>
+    </div>
+    <div class="col-12">
+      <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="makePublic" name="makePublic">
+          <label class="form-check-label" for="flexSwitchCheckChecked">Make public</label>
+          </div>
+    </div>
+    <div class="col-md-6">
+      <label for="lat" class="form-label">Latitude</label>
+      <input type="text" class="form-control" id="lat" name="lat" placeholder="Input latitude or use your current location" required>
+    </div>
+    <div class="col-md-6">
+      <label for="lng" class="form-label">Longitude</label>
+      <input type="text" class="form-control" id="lng" name="lng" placeholder="Input longitude or use your current location" required>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Date/Time</label>
+        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime">
+    </div>
+    <div class="col-12">
+      <button type="button" class = "btn btn-primary" id="getCurrentLocationBtn" name="getCurrentLocationBtn">Get current location <i class="bi bi-pin-map-fill"></i></button>
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Create a game</button>
+    </div>
+</form>
+              </div>
+            </div>
+
+
+            <!-- <div class="offcanvas offcanvas-start" tabindex="-1" id="joinButton" aria-labelledby="joinButtonLabel">
+              <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="joinButtonLabel">Join Game</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body">
+                <div class="dropdown mt-3">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    Game Type
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#">Basketball</a></li>
+                    <li><a class="dropdown-item" href="#">Soccer</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </div>
+              <div class="dropdown mt-3">
+                  <div>
+                          Location
+                      </div>
+                      <input type = "text" placeholder="Search..." >
+                  <!-- <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                    Location
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#">Basketball</a></li>
+                    <li><a class="dropdown-item" href="#">Soccer</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul> -->
+
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true)%}
+        {% if messages %}
+            {% for category,message in messages %}
+                {% if category == 'error' %}
+                    <div class="alert alert-danger alter-dismissable fade show" role = "alert">
+                        {{message}}
+                        <button type = "button" class = "close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% else %}
+                <div class="alert alert-success alter-dismissable fade show" role = "alert">
+                    {{message}}
+                    <button type = "button" class = "close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endif %}
+            {%endfor%}
+        {% endif %}
+        {% endwith %}
+        <div class = "container">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <script type = "text/javascript" src = "{{ url_for('static',filename='index.js')}}"></script>
+
+        <!-- <iframe>
+          width="600"
+          height="450"
+          style="border:0"
+          loading="lazy"
+          allowfullscreen
+          src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDbfJSrQpiU7m3TrZUR47gLJCBRfC44gys&q=Space+Needle,Seattle+WA">
+        </iframe> -->
+
+    </body>
+</html>
