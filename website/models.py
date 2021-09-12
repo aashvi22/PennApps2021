@@ -9,7 +9,7 @@ class Game(db.Model):
     initial_number_people = db.Column(db.Integer, nullable = False)
     total_number_people = db.Column(db.Integer, nullable = False)
     creation_date = db.Column(db.DateTime(timezone = True), default=func.now(), nullable = False)
-    #event_datetime = db.Column(db.DateTime(timezone = True), nullable = False)
+    event_datetime = db.Column(db.DateTime(timezone = True), nullable = False)
     latitude = db.Column(db.Float(), nullable = False)
     longitude = db.Column(db.Float(), nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False) # one to many relationship between user and his/her games
