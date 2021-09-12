@@ -92,7 +92,7 @@
           src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbfJSrQpiU7m3TrZUR47gLJCBRfC44gys&callback=initMap&libraries=&v=weekly"
           async
         ></script>
-
+    <script src="static/index.js"></script>
 <!--<form class="row g-3" method="POST">
     <div class="col-12">
       <label for="gameName" class="form-label">Name</label>
@@ -143,70 +143,60 @@
 <script>
   "use strict";
 
-  function initMap() {
-    const componentForm = [
-      'location',
-      'locality',
-      'administrative_area_level_1',
-      'country',
-      'postal_code',
-    ];
-    const map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 11,
-      center: { lat: 37.4221, lng: -122.0841 },
-      mapTypeControl: false,
-      fullscreenControl: true,
-      zoomControl: true,
-      streetViewControl: true
-    });
-    const marker = new google.maps.Marker({map: map, draggable: false});
-    const autocompleteInput = document.getElementById('location');
-    const autocomplete = new google.maps.places.Autocomplete(autocompleteInput);
-    autocomplete.addListener('place_changed', function () {
-      marker.setVisible(false);
-      const place = autocomplete.getPlace();
-      if (!place.geometry) {
-        // User entered the name of a Place that was not suggested and
-        // pressed the Enter key, or the Place Details request failed.
-        window.alert('No details available for input: \'' + place.name + '\'');
-        return;
-      }
-      renderAddress(place);
-      fillInAddress(place);
-    });
+const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 4,
+    center: myLatlng,
+  });
+ const myLatlng = { lat: -25.363, lng: 131.044 };
+const mymarker = new google.maps.Marker({
+    position: myLatlng,
+    map,
+    title: "Click to zoom",
+  });
 
-    function fillInAddress(place) {  // optional parameter
-      const addressNameFormat = {
-        'street_number': 'short_name',
-        'route': 'long_name',
-        'locality': 'long_name',
-        'administrative_area_level_1': 'short_name',
-        'country': 'long_name',
-        'postal_code': 'short_name',
-      };
-      const getAddressComp = function (type) {
-        for (const component of place.address_components) {
-          if (component.types[0] === type) {
-            return component[addressNameFormat[type]];
-          }
-        }
-        return '';
-      };
-      document.getElementById('location').value = getAddressComp('street_number') + ' '
-                + getAddressComp('route');
-      for (const component of componentForm) {
-        // Location field is handled separately above as it has different logic.
-        if (component !== 'location') {
-          document.getElementById(component).value = getAddressComp(component);
-        }
-      }
-    }
+<!--  map.addListener("center_changed", () => {-->
+<!--    // 3 seconds after the center of the map has changed, pan back to the-->
+<!--    // marker.-->
+<!--    window.setTimeout(() => {-->
+<!--      map.panTo(marker.getPosition());-->
+<!--    }, 3000);-->
+<!--  }); -->
+<!--  -->
+  mymarker.addListener("click", () => {
+     map.setZoom(8);
+     map.setCenter(marker.getPosition());
+  });
 
-    function renderAddress(place) {
-      map.setCenter(place.geometry.location);
-      marker.setPosition(place.geometry.location);
-      marker.setVisible(true);
-    }
+
+    alert("hello");
+
+
+
+     var locations = [[20,36],[74,60],[10,100]];
+     var markers = new Array();
+     for (var i = 0; i < locations[0].length; i++)
+     {
+
+                var pos = {lat: parseFloat(locations[i][0]), lng: parseFloat(locations[i][1])};
+                //making da marker
+                var marker = new google.maps.Marker({
+                    position: pos, map
+                });
+
+                marker.setMap(map);//Add to map
+                markers.push(marker);//add to markers array
+
+
+                var gameinfo = locations[i][0]//information window
+                var infowindow = new google.maps.InfoWindow({
+                    content: gameinfo
+                });
+                infowindow.open(map, marker);
+     }
+     //addMarkerListeners(myCenter);
+
+
+
   }
 </script>
 <script>
